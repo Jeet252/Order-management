@@ -26,8 +26,12 @@ export const register = async (req, res) => {
 
     // Save the user to the database
     await newUser.save();
-
-    res.status(201).json({ message: "User registered successfully" });
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "15d",
+    });
+    res
+      .status(201)
+      .json({ message: "User registered successfully", token: token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -56,9 +60,8 @@ export const login = async (req, res) => {
       expiresIn: "15d",
     });
 
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful", token: token });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "server error" });
   }
 };

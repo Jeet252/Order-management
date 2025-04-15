@@ -4,15 +4,39 @@ import InputField from "./InputField";
 
 export default function LoginForm() {
   const [inputValue, setInputValue] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(inputValue);
-    // Add login logic here
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_DOMINE_NAME}/api/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(inputValue),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.message);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json(); // Parse the JSON response
+      console.log(data); // Log the response for debugging
+    } catch (error) {
+      console.log("Error:", error); // Log any errors
+    }
   };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <InputField
@@ -21,7 +45,7 @@ export default function LoginForm() {
         placeholder="Enter Email Id"
         icon={User}
         label="Email Address"
-        value={inputValue.username}
+        value={inputValue.email}
         setValue={setInputValue}
       />
       <InputField

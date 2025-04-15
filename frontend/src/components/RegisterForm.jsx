@@ -9,11 +9,34 @@ export default function RegisterForm() {
     password: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(inputValue);
-    // Add register logic here
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_DOMINE_NAME}/api/register`, // Use the correct endpoint
+        {
+          method: "POST", // Change to POST
+          headers: {
+            "Content-Type": "application/json", // Specify JSON content type
+          },
+          body: JSON.stringify(inputValue), // Send data in the request body
+        }
+      );
+      if (!response.ok) {
+        // Parse the error response from the server
+        const errorData = await response.json();
+        console.error("Error during registration:", errorData.message); // Log the error message
+        alert(errorData.message); // Optionally show the error message to the user
+        return;
+      }
+      const data = await response.json(); // Parse the JSON response
+      console.log("Registration successful:", data); // Log the response
+    } catch (error) {
+      console.error("Error during registration:", error); // Log any errors
+    }
   };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <InputField

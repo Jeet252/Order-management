@@ -4,8 +4,11 @@ import OrdersTable from "../components/OrderTable";
 import OrderToolbar from "../components/OrderToolBar";
 
 export default function ManageOrder() {
-  const [orders, setOrders] = useState([]);
+  const [allOrders, setAllOrders] = useState([]);
+  const [orders, setOrders] = useState([...allOrders]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Sorting
   const handleSort = (e) => {
     const value = e.target.value;
     const sort_data = orders.sort((a, b) => {
@@ -17,6 +20,8 @@ export default function ManageOrder() {
     });
     setOrders([...sort_data]);
   };
+
+  //  Fetching Data
   useEffect(() => {
     const dummyOrders = [
       {
@@ -41,6 +46,7 @@ export default function ManageOrder() {
     const filterData = dummyOrders.filter((e) =>
       e.customerName.toLowerCase().includes(searchQuery)
     );
+    setAllOrders([...filterData]);
     setOrders([...filterData]);
   }, [searchQuery]);
   return (
