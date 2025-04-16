@@ -1,6 +1,8 @@
 import User from "../database/models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Controller for user registration
 export const register = async (req, res) => {
@@ -63,5 +65,26 @@ export const login = async (req, res) => {
     res.status(200).json({ message: "Login successful", token: token });
   } catch (error) {
     res.status(500).json({ message: "server error" });
+  }
+};
+
+export const verifyToken = async (req, res) => {
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+
+      const decoded = jwt.verify(JSON.parse(token), process.env.JWT_SECRET);
+
+      res.status(200).json({ id: decoded.id });
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({ message: "Invalid or expired token" });
+    }
+  } else {
+    res.status(401).json({ message: "No token provided" });
   }
 };

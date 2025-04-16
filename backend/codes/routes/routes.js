@@ -1,5 +1,9 @@
 import express from "express";
-import { login, register } from "../controllers/authenthication.controllers.js";
+import {
+  login,
+  register,
+  verifyToken,
+} from "../controllers/authenthication.controllers.js";
 import {
   createOrder,
   getAllOrders,
@@ -12,6 +16,7 @@ const router = express.Router();
 
 router.post("/login", login);
 router.post("/register", register);
+router.get("/verifytoken", verifyToken);
 
 router.post("/orders", createOrder);
 router.get("/orders", getAllOrders);

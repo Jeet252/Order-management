@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import InputField from "./InputField";
 import { Lock, Mail, User } from "react-feather";
+import { useApi } from "../context/apiContext";
 
 export default function RegisterForm() {
+  const { postApi } = useApi();
   const [inputValue, setInputValue] = useState({
     username: "",
     email: "",
@@ -13,25 +15,14 @@ export default function RegisterForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_DOMINE_NAME}/api/register`, // Use the correct endpoint
-        {
-          method: "POST", // Change to POST
-          headers: {
-            "Content-Type": "application/json", // Specify JSON content type
-          },
-          body: JSON.stringify(inputValue), // Send data in the request body
-        }
-      );
+      const response = await postApi("register", inputValue);
+
       if (!response.ok) {
-        // Parse the error response from the server
-        const errorData = await response.json();
-        console.error("Error during registration:", errorData.message); // Log the error message
-        alert(errorData.message); // Optionally show the error message to the user
+        console.error("Error during registration:", response.message); // Log the error message
+        alert(response.message); // Optionally show the error message to the user
         return;
       }
-      const data = await response.json(); // Parse the JSON response
-      console.log("Registration successful:", data); // Log the response
+      console.log("Registration successful:", response);
     } catch (error) {
       console.error("Error during registration:", error); // Log any errors
     }

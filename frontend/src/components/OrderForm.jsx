@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Calendar, Package, User } from "react-feather";
 import InputField from "./InputField";
+import { useApi } from "../context/apiContext";
 
 export default function OrderForm() {
   const [inputValue, setInputValue] = useState({
@@ -8,22 +9,11 @@ export default function OrderForm() {
     quantity: "",
     deliveryDate: "",
   });
-
+  const { postApi } = useApi();
   const handleClick = async (e) => {
     e.preventDefault();
-    console.log(inputValue);
     try {
-      const postData = await fetch(
-        `${import.meta.env.VITE_DOMINE_NAME}/api/orders`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json", // Specify JSON content type
-          },
-          body: JSON.stringify(inputValue),
-        }
-      );
-      const response = await postData.json();
+      const response = await postApi("orders", inputValue);
       console.log(response);
     } catch (error) {
       console.log(error);

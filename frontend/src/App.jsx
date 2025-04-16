@@ -4,17 +4,38 @@ import Home from "./pages/Home";
 import ManageOrder from "./pages/ManageOrder";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import { AuthProvider } from "./context/authContext";
+import { ApiProvider } from "./context/apiContext";
+import PrivateRoute from "./pages/PrivateRoute";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/manageorder" element={<ManageOrder />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <ApiProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <Home />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/manageorder"
+              element={
+                <PrivateRoute>
+                  <ManageOrder />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </ApiProvider>
+    </AuthProvider>
   );
 }
 

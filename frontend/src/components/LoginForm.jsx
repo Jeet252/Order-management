@@ -1,39 +1,31 @@
 import React, { useState } from "react";
 import { Lock, User } from "react-feather";
 import InputField from "./InputField";
+import { useAuth } from "../context/authContext";
+import { useApi } from "../context/apiContext";
 
 export default function LoginForm() {
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
   });
-
+  const { login } = useAuth();
+  const { postApi } = useApi();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(inputValue);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_DOMINE_NAME}/api/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(inputValue),
-        }
-      );
+      const response = await postApi("login", inputValue);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(errorData.message);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json(); // Parse the JSON response
-      console.log(data); // Log the response for debugging
+      login(response.data.token);
+      console.log(response.data);
     } catch (error) {
-      console.log("Error:", error); // Log any errors
+      if (error.response) {
+        console.error("Error during login:", error.response.data.message);
+        alert(error.response.data.message);
+      } else {
+        console.error("Unexpected error:", error.message);
+      }
     }
   };
 
