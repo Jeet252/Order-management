@@ -2,21 +2,16 @@ import Order from "../database/models/order.model.js";
 
 // Create a new order
 export const createOrder = async (req, res) => {
-  const { customerName, quantity, deliveryDate } = req.body;
+  const { userId, customerName, quantity, deliveryDate } = req.body;
 
   try {
-    const parsedDeliveryDate = new Date(deliveryDate);
-    if (isNaN(parsedDeliveryDate.getTime())) {
-      return res.status(400).json({ message: "Invalid delivery date format" });
-    }
-
     const newOrder = new Order({
-      userId: "67f93b8820157f95a92ea4ac",
+      userId,
       customerName,
       product: "Sata",
       quantity,
       totalAmount: quantity * 280,
-      deliveryDate: parsedDeliveryDate,
+      deliveryDate,
     });
 
     await newOrder.save();
@@ -40,12 +35,10 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
-// Get a specific order by ID
-export const getOrderById = async (req, res) => {
-  const { id } = req.params;
-
+export const getUsersOrder = async (req, res) => {
+  const { userId } = req.params;
   try {
-    const order = await Order.findById(id).populate("userId", "username email");
+    const order = await Order.find({ userId: userId });
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }

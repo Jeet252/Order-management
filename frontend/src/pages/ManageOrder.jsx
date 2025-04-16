@@ -1,57 +1,55 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Navbar from "../components/Navbar";
 import OrdersTable from "../components/OrderTable";
 import OrderToolbar from "../components/OrderToolBar";
+import { useApi } from "../context/apiContext";
 
 export default function ManageOrder() {
+  const { getApi } = useApi();
   const [allOrders, setAllOrders] = useState([]);
-  const [orders, setOrders] = useState([...allOrders]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState(""); // Track sorting option
 
-  // Sorting
-  const handleSort = (e) => {
-    const value = e.target.value;
-    const sort_data = orders.sort((a, b) => {
-      if (value === "quantity") return b.quantity - a.quantity;
-      if (value === "amount") return b.amount - a.amount;
-      if (value === "date")
-        return new Date(a.deliveryDate) - new Date(b.deliveryDate);
-      return 0;
-    });
-    setOrders([...sort_data]);
-  };
-
-  //  Fetching Data
+  // Fetch orders on component mount
   useEffect(() => {
-    const dummyOrders = [
-      {
-        customerName: "John Doe",
-        quantity: 50,
-        deliveryDate: "2025-04-20",
-        amount: 50 * 280,
-      },
-      {
-        customerName: "Jane Smith",
-        quantity: 100,
-        deliveryDate: "2025-04-18",
-        amount: 100 * 280,
-      },
-      {
-        customerName: "Alice Johnson",
-        quantity: 75,
-        deliveryDate: "2025-04-22",
-        amount: 75 * 280,
-      },
-    ];
-    const filterData = dummyOrders.filter((e) =>
-      e.customerName.toLowerCase().includes(searchQuery)
-    );
-    setAllOrders([...filterData]);
-    setOrders([...filterData]);
-  }, [searchQuery]);
+    const fetchOrders = async () => {
+      try {
+        const userId = JSON.parse(sessionStorage.getItem("user")).id;
+        const response = await getApi(`orders/${userId}`);
+        setAllOrders(response.data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, [getApi]);
+
+  const filteredAndSortedOrders = useMemo(() => {
+    let filteredOrders = allOrders;
+
+    if (searchQuery) {
+      filteredOrders = allOrders.filter((order) =>
+        order.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (sortOption) {
+      filteredOrders = [...filteredOrders].sort((a, b) => {
+        if (sortOption === "quantity") return b.quantity - a.quantity;
+        if (sortOption === "amount") return b.totalAmount - a.totalAmount;
+        if (sortOption === "date")
+          return new Date(a.deliveryDate) - new Date(b.deliveryDate);
+        return 0;
+      });
+    }
+
+    return filteredOrders;
+  }, [allOrders, searchQuery, sortOption]);
+
   return (
     <div className="bg-orange-50 min-h-screen text-slate-800">
-      <Navbar userName={"Jeet Nakrani"} />
+      <Navbar />
 
       <main className="max-w-5xl mx-auto p-6">
         <h1 className="text-2xl font-bold mb-6 text-slate-800">
@@ -60,10 +58,10 @@ export default function ManageOrder() {
         <OrderToolbar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          handleSort={handleSort}
+          handleSort={(e) => setSortOption(e.target.value)}
         />
 
-        <OrdersTable orders={orders} />
+        <OrdersTable orders={filteredAndSortedOrders} />
       </main>
     </div>
   );

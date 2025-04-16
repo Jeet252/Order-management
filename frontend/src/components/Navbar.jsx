@@ -3,7 +3,9 @@ import { Menu, User } from "react-feather";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 
-export default function Navbar({ userName }) {
+export default function Navbar({
+  userName = JSON.parse(sessionStorage.getItem("user")).username,
+}) {
   const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   return (

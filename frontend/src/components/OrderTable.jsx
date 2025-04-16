@@ -1,7 +1,12 @@
 export default function OrdersTable({ orders }) {
   const dateFormating = (date) => {
+    const fromatedDate = date.split("-");
     return (
-      date.split("-")[2] + "/" + date.split("-")[1] + "/" + date.split("-")[0]
+      fromatedDate[2].split("T")[0] +
+      "/" +
+      fromatedDate[1] +
+      "/" +
+      fromatedDate[0]
     );
   };
   return (
@@ -27,7 +32,7 @@ export default function OrdersTable({ orders }) {
                 <td className="px-4 py-3">
                   {dateFormating(order.deliveryDate)}
                 </td>
-                <td className="px-4 py-3">{order.amount}</td>
+                <td className="px-4 py-3">{order.totalAmount}</td>
               </tr>
             ))
           ) : (

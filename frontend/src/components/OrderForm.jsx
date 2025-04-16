@@ -13,7 +13,10 @@ export default function OrderForm() {
   const handleClick = async (e) => {
     e.preventDefault();
     try {
-      const response = await postApi("orders", inputValue);
+      const response = await postApi("orders", {
+        ...inputValue,
+        userId: JSON.parse(sessionStorage.getItem("user")).id,
+      });
       console.log(response);
     } catch (error) {
       console.log(error);

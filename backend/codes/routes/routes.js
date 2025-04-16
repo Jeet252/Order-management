@@ -7,7 +7,7 @@ import {
 import {
   createOrder,
   getAllOrders,
-  getOrderById,
+  getUsersOrder,
   updateOrder,
   deleteOrder,
 } from "../controllers/data.controller.js";
@@ -20,7 +20,7 @@ router.get("/verifytoken", verifyToken);
 
 router.post("/orders", createOrder);
 router.get("/orders", getAllOrders);
-router.get("/orders/:id", getOrderById);
+router.get("/orders/:userId", getUsersOrder);
 router.put("/orders/:id", updateOrder);
 router.delete("/orders/:id", deleteOrder);
 
