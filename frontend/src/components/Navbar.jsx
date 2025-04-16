@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Menu, User } from "react-feather";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/authContext";
 
 export default function Navbar({ userName }) {
+  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   return (
     <nav className="bg-white shadow-md px-6 py-4 relative">
@@ -15,8 +17,25 @@ export default function Navbar({ userName }) {
             <Menu className="w-6 h-6" />
           </button>
           <div className="hidden md:flex gap-6">
-            <Link label="Submit Orders" to="/" />
-            <Link label="Track Orders" to="/manageorder" />
+            <Link
+              className="text-orange-600 font-medium hover:text-orange-700 transition"
+              to="/"
+            >
+              Submit Orders
+            </Link>
+            <Link
+              className="text-orange-600 font-medium hover:text-orange-700 transition"
+              label=""
+              to="/manageorder"
+            >
+              Track Orders
+            </Link>
+            <button
+              onClick={logout}
+              className=" cursor-pointer text-orange-600 font-medium hover:text-orange-700 transition"
+            >
+              Logout
+            </button>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -39,6 +58,12 @@ export default function Navbar({ userName }) {
           >
             Track Orders
           </Link>
+          <button
+            onClick={logout}
+            className="block text-orange-600 font-medium hover:text-orange-700 transition"
+          >
+            Logout
+          </button>
         </div>
       )}
     </nav>

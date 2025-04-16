@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import InputField from "./InputField";
 import { Lock, Mail, User } from "react-feather";
 import { useApi } from "../context/apiContext";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext";
 
 export default function RegisterForm() {
+  const { login } = useAuth();
   const { postApi } = useApi();
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState({
     username: "",
     email: "",
@@ -16,14 +20,12 @@ export default function RegisterForm() {
 
     try {
       const response = await postApi("register", inputValue);
-
-      if (!response.ok) {
-        console.error("Error during registration:", response.message); // Log the error message
-        alert(response.message); // Optionally show the error message to the user
-        return;
+      if (response.data.message === "User registered successfully") {
+        login(response.data.token);
+        navigate("/");
       }
-      console.log("Registration successful:", response);
     } catch (error) {
+      alert(error.response.data.message);
       console.error("Error during registration:", error); // Log any errors
     }
   };

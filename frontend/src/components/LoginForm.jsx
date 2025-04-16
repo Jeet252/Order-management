@@ -3,6 +3,7 @@ import { Lock, User } from "react-feather";
 import InputField from "./InputField";
 import { useAuth } from "../context/authContext";
 import { useApi } from "../context/apiContext";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
   const [inputValue, setInputValue] = useState({
@@ -11,21 +12,20 @@ export default function LoginForm() {
   });
   const { login } = useAuth();
   const { postApi } = useApi();
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const response = await postApi("login", inputValue);
 
-      login(response.data.token);
-      console.log(response.data);
-    } catch (error) {
-      if (error.response) {
-        console.error("Error during login:", error.response.data.message);
-        alert(error.response.data.message);
-      } else {
-        console.error("Unexpected error:", error.message);
+      if (response.data.message === "Login successful") {
+        login(response.data.token);
+        navigate("/");
       }
+    } catch (error) {
+      console.error("Error during login:", error.response.data.message);
+      alert(error.response.data.message);
     }
   };
 

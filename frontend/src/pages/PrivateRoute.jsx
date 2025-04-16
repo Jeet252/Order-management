@@ -6,7 +6,7 @@ import { Navigate } from "react-router-dom";
 export default function PrivateRoute({ children }) {
   const { token } = useAuth();
   const { getApi } = useApi();
-  const [isValidToken, setIsValidToken] = useState(null); // Track token validation status
+  const [isValidToken, setIsValidToken] = useState(null);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -18,9 +18,16 @@ export default function PrivateRoute({ children }) {
 
       try {
         const response = await getApi("verifytoken", token);
-        localStorage.setItem("userId", response.data.id);
-        console.log("Token is valid:", response);
-        setIsValidToken(true);
+        if (response.data.message === "Token is Verified") {
+          sessionStorage.setItem(
+            "user",
+            JSON.stringify({
+              id: response.data.id,
+              username: response.data.username,
+            })
+          );
+          setIsValidToken(true);
+        }
       } catch (error) {
         console.error("Token verification failed:", error);
         setIsValidToken(false);
@@ -30,13 +37,13 @@ export default function PrivateRoute({ children }) {
     verifyToken();
   }, [token, getApi]);
 
-  // Show a loading state while verifying the token
+  if (isValidToken === null) {
+    return <div>Loading...</div>;
+  }
 
-  // Redirect to login if the token is invalid
   if (!isValidToken) {
     return <Navigate to="/login" replace />;
   }
 
-  // Render the children if the token is valid
   return children;
 }
